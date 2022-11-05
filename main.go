@@ -28,20 +28,20 @@ func main() {
 
 	app.Get("/books", func(c *fiber.Ctx) error {
 		return c.JSON(books)
-
 	})
 
-	app.Post("/addbook", handlerAddbook)
+	app.Post("/books", handlerAddbook)
 
 	app.Listen(":5033")
 }
+
 func handlerAddbook(c *fiber.Ctx) error {
-	fmt.Println("called post api addbook")
 	addbook := &Addbook{}
 	err := c.BodyParser(addbook)
 	if err != nil {
 		fmt.Printf("bodyparse error: %v\n", err)
 		return c.SendString("error")
 	}
+	books = append(books, Book{Title: addbook.Title, Author: addbook.Author})
 	return c.JSON(addbook)
 }
