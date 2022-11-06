@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,8 +25,9 @@ func main() {
 
 	app.Get("/books", handlerGetBooks)
 	app.Post("/books", handlerAddbook)
+	app.Delete("/books/:id", handlerDeleteBooks)
 
-	app.Listen(":5033")
+	app.Listen(":5533")
 }
 
 func handlerGetBooks(c *fiber.Ctx) error {
@@ -39,6 +41,26 @@ func handlerAddbook(c *fiber.Ctx) error {
 		fmt.Printf("bodyparse error: %v\n", err)
 		return c.SendString("error")
 	}
+
 	books = append(books, *addbook)
 	return c.JSON(addbook)
+}
+
+func handlerDeleteBooks(c *fiber.Ctx) error {
+	id := c.Params("id")
+	iId, err := strconv.Atoi(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid id.",
+		})
+	}
+	for i, book := range books {
+		if book.ID == iId {
+			books = append(books[:i], books[i+1:]...)
+			return c.Status(fiber.StatusOK).SendString("kitap silindi!")
+		}
+	}
+
+	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Record not found"})
+
 }
