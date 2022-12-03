@@ -1,1 +1,3 @@
 # postapi
+
+Delete fonksiyonu eklendi.
